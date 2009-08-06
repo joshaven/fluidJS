@@ -75,9 +75,9 @@ Create a ~/src directory and check out k7 out into it ~/src/k7
 
 ### Compiling (A.K.A. Installation) ###
 Building and downloading dependencies, namely the V8 source, is as simple as 
-typing `make`.
+typing `make` as root.
 
-> `make`
+> `sudo make`
 
 You may also wish to take advantage of other make options:
 You have a couple of options that you can activate:
