@@ -1,11 +1,3 @@
-# WARNING! #
-This readme is a recommended rewrite that has not been reviewed or approved 
-by the the project authors.  I had some questions and after studying the code 
-and documentation provided, I decided to attempt to rewrite this document to 
-clarify the subject matter presented.  Although I have carefully worded and
-researched the following content, the information herein may not accurately 
-represent or explain K7 or V8.
-
 # K7 - A standard library for V8 #
 Author: Sebastien Pierre <sebastien@type-z.org>  
 Date:   28-Sep-2008  
@@ -63,7 +55,8 @@ The k7 source code is separated in two primary folders:
 ## Getting Started ##
 
 ### Prerequisites ###
-POSIX (Unix/Linux/Mac) environment, git, GPP, subversion & scons.
+POSIX (Unix/Linux/Mac) environment, gcc, git, python scons & subversion
+
 
 ### Obtaining Source ###
 Create a ~/src directory and check out k7 out into it ~/src/k7
@@ -77,7 +70,8 @@ Create a ~/src directory and check out k7 out into it ~/src/k7
 Building and downloading dependencies, namely the V8 source, is as simple as 
 typing `make` as root.
 
-> `sudo make`
+> `sudo make`  
+> `sudo make install`  
 
 You may also wish to take advantage of other make options:
 You have a couple of options that you can activate:
@@ -88,5 +82,11 @@ You have a couple of options that you can activate:
 >   `make LIBTASK=1`  # Embeds libtask and provides a 'yield' feature  
 
 ## Usage ##
+To confirm your installation you can type `which k7` which should yield 
+"/usr/local/bin/k7" or "/usr/bin/k7" depending upon where you installed k7.
 
-Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+To execute a JavaScript file simply type `k7` followed by a reference to the 
+script, for example:
+
+`k7 examples/intro-helloworld.js`
+
