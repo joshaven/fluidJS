@@ -1,6 +1,6 @@
-var env   = system.k7.ENV
-var print = system.k7.shell.print
-print(env)
-print(env.args)
-print(env.argv)
-print(env.argc)
+var env   = system.ENV;
+var print = system.shell.print;
+print('\nsystem.ENV:' + JSON.stringify(env) );
+print('\nsystem.ENV.args:: ' + env.args);
+print('\nsystem.ENV.argv:: ' + env.argv);
+print('\nsystem.ENV.argc:: ' + env.argc);
