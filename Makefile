@@ -10,7 +10,7 @@
 
 PRODUCT               =k7
 VERSION               :=$(shell date +'%Y%m%d')
-
+DESTDIR               =/usr/local/bin
 PLATFORM              =$(shell uname -s)
 CPP                   =g++
 CPPFLAGS              =
@@ -138,6 +138,14 @@ build:
 
 deps:
 	mkdir deps
+
+# added by Joshaven
+install:
+	cp k7 "$(DESTDIR)/"
+
+uninstall:
+	rm "$(DESTDIR)/k7"
+# end of add by Joshaven
 
 
 deps/v8:
