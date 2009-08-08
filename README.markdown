@@ -1,6 +1,14 @@
+# Notice #
+Please refer to the official project: 
+[github.com/sebastien/k7](http://github.com/sebastien/k7/tree/master).
+The information presented here may not be the most accurate and is not the 
+most up-to-date.
+
+
 # K7 - A standard library for V8 #
 Author: Sebastien Pierre <sebastien@type-z.org>  
 Date:   28-Sep-2008  
+Updated: Sat Aug  8 13:03:24 EDT 2009 -- Joshaven
 
 ## Project Description ##
 The K7 projects aims at creating a high-quality standard library for [Google's 
