@@ -7,3 +7,4 @@ deps/libtask/tcpproxy
 deps/libtask/testdelay
 k7
 build
+doc/api
