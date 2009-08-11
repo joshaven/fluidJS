@@ -97,7 +97,7 @@ k7: $(OBJECTS) $(SOBJECTS) $(PLUGINS) $(BUILD_BINLIBS) $(V8_BINARY) $(BUILD_DOCS
 	$(CPP) $(CPPFLAGS) $(INCLUDES) $(OBJECTS) $(SOBJECTS) -rdynamic -o $(PRODUCT) $(BUILD_BINLIBS) $(BUILD_LIBS) 
 
 lib:
-  mkdir -p /usr/local/lib/JavaScript/jslibs
+	mkdir -p /usr/local/lib/JavaScript/jslibs
 
 test:
 	python tools/test.py --mode=release
