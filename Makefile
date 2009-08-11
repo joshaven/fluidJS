@@ -24,7 +24,8 @@ V8_INCLUDE            =deps/v8/include
 V8_BINARY             =deps/v8/libv8.a
 JS2H                  =tools/js2h
 SOURCES               =$(wildcard src/*.cpp)
-SOURCES_API           =$(shell find lib -name "*.api")
+# SOURCES_API           =$(shell find lib -name "*.api")
+BUILD_DOCS            =api
 HEADERS               =$(wildcard src/*.h)
 MODULES               =$(wildcard lib/*.cpp lib/*/*.cpp lib/*/*/*.cpp lib/*/*/*/*.cpp)
 MODULES_JS            =$(wildcard lib/*.js lib/*/*.js lib/*/*/*.js lib/*/*/*/*.js)
@@ -90,18 +91,33 @@ ifeq ($(STATIC),0)
 endif
 endif
 
+.PHONY: options info xinfo api clean
 
-.PHONY: options info xinfo
+k7: $(OBJECTS) $(SOBJECTS) $(PLUGINS) $(BUILD_BINLIBS) $(V8_BINARY) $(BUILD_DOCS)
+	$(CPP) $(CPPFLAGS) $(INCLUDES) $(OBJECTS) $(SOBJECTS) -rdynamic -o $(PRODUCT) $(BUILD_BINLIBS) $(BUILD_LIBS) 
 
-k7: $(OBJECTS) $(SOBJECTS) $(PLUGINS) $(BUILD_BINLIBS) $(V8_BINARY)
-	$(CPP) $(CPPFLAGS) $(INCLUDES) $(OBJECTS) $(SOBJECTS) -rdynamic -o $(PRODUCT) $(BUILD_BINLIBS) $(BUILD_LIBS)
+lib:
+  mkdir -p /usr/local/lib/JavaScript/jslibs
+
+test:
+	python tools/test.py --mode=release
+
+test-all:
+	python tools/test.py --mode=debug,release
+
+test-debug:
+	python tools/test.py --mode=debug
+
+benchmark:
+	build/default/node benchmark/run.js
+
 
 info:
 	@echo "K7 build system"
 	@echo
 	@echo "k7      - builds the ./k7 binary"
 	@echo "compact - compacts the ./k7 binary (requires uxp)"
-	@echo "api     - builds the API documentation (requires sdoc)"
+	@echo "api     - builds the API documentation"
 	@echo "clean   - cleans the build system"
 	@echo "options - displays available configuration options"
 	@echo
@@ -113,7 +129,7 @@ xinfo:
 	@echo "Modules (js):\n$(MODULES_JS)\n"
 	@echo "Sources:\n$(SOURCES)\n"
 	@echo "Plugins:\n$(PLUGINS)\n"
-	@echo "API:\n$(SOURCES_API)\n"
+  # @echo "API:\n$(SOURCES_API)\n"
 
 options:
 	@echo "K7 build options"
@@ -123,8 +139,10 @@ options:
 	@echo "LIBEVENT - Enables libevent2 bindings (default=1, requires event2/event.h)"
 	@echo "LIBTASK  - Enables libtask bindings  (default=0)"
 
-api: doc/k7-api.html
-	
+api:
+	mkdir -p doc/api
+	mkdir -p doc/api/NaturalDocs.project
+	deps/NaturalDocs-1.4/NaturalDocs -p doc/api/NaturalDocs.project/ -o HTML doc/api -i src -i lib
 
 compact: k7
 	strip $<
@@ -147,6 +165,8 @@ uninstall:
 	rm "$(DESTDIR)/k7"
 # end of add by Joshaven
 
+deps/jspec:
+   git submodule add git://github.com/visionmedia/jspec.git deps/jspec
 
 deps/v8:
 	#cd deps && svn checkout http://v8.googlecode.com/svn/trunk v8
@@ -200,8 +220,8 @@ build/include/%.js.h: lib/%.js $(JS2H)
 	@mkdir -p `dirname $@` || true
 	$(JS2H) $< > $@
 
-doc/k7-api.html: $(SOURCES_API)
-	@mkdir -p `dirname $@` || true
-	sugar -a$@ -ljs $(SOURCES_API)
+# doc/k7-api.html: $(SOURCES_API)
+#   @mkdir -p `dirname $@` || true
+#   sugar -a$@ -ljs $(SOURCES_API)
 
 # EOF
