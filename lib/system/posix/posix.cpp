@@ -7,6 +7,19 @@
 // Creation date     : 27-Sep-2008
 // Last modification : 05-Jun-2009
 // ----------------------------------------------------------------------------
+/*
+  File: system.posix
+    posix functions
+
+    Author: Sebastien Pierre                   <sebastien@type-z.org>
+    Author: Victor Grishchenko
+
+    Creation date:      27-Sep-2008
+
+    Last modification:  10-Aug-2009
+*/
+
+
 
 #include "k7.h"
 
@@ -53,22 +66,33 @@ Handle<Object> addr2obj (struct sockaddr_in* addr) {
 	return scope.Close(obj);
 }
 
-OBJECT(posix_FILE,1,FILE* file)
-{
+OBJECT(posix_FILE,1,FILE* file) {
 	INTERNAL(0,file);
 	return self;
-}
-END
+} END
 
-FUNCTION(posix_time)
-{
+/*
+  Function: posix.time()
+  Returns the local UNIX time as an integer, in milliseconds
+*/
+FUNCTION(posix_time) {
 	ARG_COUNT(0)
 	return JS_int(time(NULL));
-}
-END
+} END
+/*
+  Function: posix.fopen(path, mode)
+  Opens the file at the given 'path' using the given 'mode'. Returns a file object, that you should not forget to close.
+  
+  Parameters:
+    path - A string, ie '/tmp/myfile.txt'
+    mode - A String, ie 'w'
 
-FUNCTION(posix_fopen)
-{
+  Example:
+  (start code)
+    var fd = fopen("/tmp/myfile.txt", "w")
+  (end)
+*/
+FUNCTION(posix_fopen) {
 	ARG_COUNT(2)
 	ARG_utf8(path,0);
 	ARG_utf8(mode,1);
@@ -76,20 +100,24 @@ FUNCTION(posix_fopen)
 	if (fd == NULL)
 		return JS_null;
 	return posix_FILE(fd);
-}
-END
+} END
 
-FUNCTION(posix_fclose)
-{
+/*
+  Function posix.fclose(fileObj)
+  Closes the given file object.
+*/
+FUNCTION(posix_fclose) {
 	ARG_COUNT(1);
 	ARG_obj(fileObj,0);
 	EXTERNAL(FILE*,file,fileObj,0);
 	return JS_int(fclose(file));
-}
-END
+} END
 
-FUNCTION(posix_popen)
-{
+/*
+  Function posix.popen(command, mode)
+  Opens a pipe
+*/
+FUNCTION(posix_popen) {
 	ARG_COUNT(2)
 	ARG_utf8(path,0);
 	ARG_utf8(type,1);
@@ -97,39 +125,50 @@ FUNCTION(posix_popen)
 	if (fd == NULL)
 		return JS_null;
 	return posix_FILE(fd);
-}
-END
+} END
 
-FUNCTION(posix_pclose)
-{
+/*
+  Function posix.pclose(fileObj)
+  Closes a pipe
+*/
+FUNCTION(posix_pclose) {
 	ARG_COUNT(1);
 	ARG_obj(fileObj,0);
 	EXTERNAL(FILE*,file,fileObj,0);
 	return JS_int(pclose(file));
-}
-END
+} END
 
-FUNCTION(posix_system)
-{
+/*
+  Function posix.system(command)
+  Executes a system command.
+  Returns:
+  Integer 
+*/
+FUNCTION(posix_system) {
 	ARG_COUNT(1);
 	ARG_utf8(command,0);
 	return JS_int(system(*command));
-}
-END
+} END
 
-FUNCTION(posix_fwrite)
-{
+/*
+  Function posix.fwrite(data, size, nmemb, fileObj)
+  Writes to a file
+*/
+FUNCTION(posix_fwrite) {
 	ARG_utf8(data,0);
 	ARG_int(size,1);
 	ARG_int(nmemb,2);
 	ARG_obj(fileObj,3);
 	EXTERNAL(FILE*,file,fileObj,0);
 	return JS_int(fwrite(*data,size,nmemb,file));
-}
-END
+} END
 
-FUNCTION(posix_fread)
-{
+/*
+  Function: posix.fread(size, nmemb, fileObj)
+  Reads 'quantity' elements of the given 'size' (in bytes) from the given 'file'
+  object, returning a string which may be emty if there is nothing to be read.
+ */
+FUNCTION(posix_fread) {
 	ARG_COUNT(3);
 	ARG_int(size,0);
 	ARG_int(nmemb,1);
@@ -143,25 +182,33 @@ FUNCTION(posix_fread)
 	v8::Handle<v8::String> strbuf = JS_str2(buf, read);
 	delete [] buf;
 	return strbuf;
-}
-END
+} END
 
-FUNCTION(posix_feof)
-{
+/*
+  Function posix.feof(fileObj)
+  Returns true if end of file
+  Returns:
+    Boolean
+*/
+FUNCTION(posix_feof) {
 	ARG_obj(fileObj, 1);
 	EXTERNAL(FILE*,file,fileObj,0);
 	return Boolean::New(feof(file));
-}
-END
-	
-FUNCTION(posix_readfile)
-{
-	STUB
-}
-END
+} END
 
-FUNCTION(posix_writefile)
-{
+/*
+  Function posix.readfile()
+  STUB
+*/
+FUNCTION(posix_readfile) {
+	STUB
+} END
+
+/*
+  Function posix.writefile(name, data)
+  Writes data to a file.
+*/
+FUNCTION(posix_writefile) {
 	ARG_COUNT(2);
 	ARG_utf8(name, 0);
 	ARG_utf8(data, 1);
@@ -179,18 +226,15 @@ FUNCTION(posix_writefile)
 	
 	return JS_int(result);
 	
-}
-END
+} END
 
-// See this good tutorial for the pthreads API
-// https://computing.llnl.gov/tutorials/pthreads/
+// See this good tutorial for the pthreads API 
+//  https://computing.llnl.gov/tutorials/pthreads/
 
-OBJECT(posix_PTHREAD,1,pthread_t* thread)
-{
+OBJECT(posix_PTHREAD,1,pthread_t* thread) {
 	INTERNAL(0,thread)
 	return self;
-}
-END
+} END
 
 // NOTE: This is WIP code that will be moved to a "task" module using libtask API
 void* posix_pthread_create_callback(void* context) {
@@ -209,8 +253,8 @@ void* posix_pthread_create_callback(void* context) {
 	// TODO: We should release the callback context
 }
 
-FUNCTION(posix_pthread_create)
-{
+
+FUNCTION(posix_pthread_create) {
 	ARG_COUNT(2);
 	//Handle<Function> callback = Handle<Function>::Cast(args[(0)]);
 	ARG_fn(callback,0);
@@ -227,11 +271,26 @@ FUNCTION(posix_pthread_create)
 	//pthread_create(thread, NULL, posix_pthread_create_callback, (void*)*result);
 	posix_pthread_create_callback((void*)*result);
 	return result;
-}
-END
+} END
 
-FUNCTION(posix_open)
-{
+/*
+  Function: posix.open(name, mode)
+  
+  Parameters:
+  filename - String containing the name of the file to be opened.
+  mode - Flags describing the requested i/o mode for the file.
+  
+  which consists on a combination of one or more of the following flags defined as member constants:
+      flag value	opening mode
+      app	(append) Set the stream's position indicator to the end of the stream before each output operation.
+      ate	(at end) Set the stream's position indicator to the end of the stream on opening.
+      binary	(binary) Consider stream as binary rather than text.
+      in	(input) Allow input operations on the stream.
+      out	(output) Allow output operations on the stream.
+      trunc	(truncate) Any current content is discarded, assuming a length of zero on opening.
+  
+*/
+FUNCTION(posix_open) {
 	ARG_COUNT(2);
 	ARG_str(name,0);
 	ARG_int(mode,1);
@@ -241,35 +300,69 @@ FUNCTION(posix_open)
 	} else {
 		return Integer::New(fd);
 	}
-}
-END
-
-FUNCTION(posix_close)
-{
+} END
+/* 
+  Function: posix.close(file_descriptor)
+*/
+FUNCTION(posix_close) {
 	ARG_COUNT(1);
 	ARG_int(fd,0);
 	close(fd);
 	return JS_undefined;
-}
-END
+} END
 
-FUNCTION(posix_unlink,PSTR(path))
-{
+/* 
+  Function: posix.unlink(path)
+*/
+FUNCTION(posix_unlink,PSTR(path)) {
 	return JS_int(unlink(*path));
-}
-END
+} END
 
+/*
+  Function: posix.socket(domain, type)
+  Creates a socket: endpoint for communication.
+ 
+  Parameters:
+    domain - An integer, representing the protocol family of the created socket.
+      ie: posix.AF_INET (IPv4), posix.AF_INET6 (IPv6), posix.AF_UNIX (local socket using a file)
+    type - An integer: posix.SOCK_STREAM (Stream), posix.SOCK_DGRAM (Datagram), posix.SOCK_SEQPACKET (Sequenced Packet), posix.SOCK_RAW (Raw)
+      
+    (The protocol is inferred from domain & type.)
 
+  Returns:
+    file descriptor integer
 
-FUNCTION(posix_socket,PINT(domain),PINT(type))
-{
+  Examples:
+  (start code)
+    sock = posix.socket(posix.AF_INET, posix.SOCK_STREAM);
+    sock = posix.socket(posix.AF_INET6, posix.SOCK_STREAM);
+  (end)
+ */
+FUNCTION(posix_socket,PINT(domain),PINT(type)) {
 	int sock = socket(domain,type,0);
 	return JS_int(sock);
-}
-END
+} END
 
-FUNCTION(posix_bind)
-{
+/*
+ Function: posix.bind(sockfd, ip)
+ Assigns an address to a socket.
+
+ Parameters:
+   sockfd - An integer: Socket File Descriptor, representing the socket to perform the bind on.
+   ip - An object: Contains the IP address (addr) and port number (port)
+   
+   (addrlen is inferred from the address provided)
+
+ Returns:
+   0 = success OR -1 = error
+
+ Example:
+ (start code)
+   sockfd = posix.socket(posix.AF_INET, posix.SOCK_STREAM);
+   posix.bind(sockfd, {addr:"127.0.0.1",port:7001});
+ (end)
+*/
+FUNCTION(posix_bind) {
 	ARG_COUNT(2);
 	ARG_int(sock,0);
 	ARG_obj(ip,1);
@@ -279,21 +372,50 @@ FUNCTION(posix_bind)
 	if (0!=bind(sock,(struct sockaddr*)&addr,sizeof addr)) 
 		JS_ERROR(strerror(errno));
 	return Undefined();
-}
-END
+} END
 
-FUNCTION(posix_listen)
-{
-	ARG_COUNT(1);
+/*
+  Function: posix.listen(sockfd, backlog)
+  Prepares socket for incoming connections.
+  
+  Parameters:
+    sockfd - An integer: Socket File Descriptor, representing the socket to listen on.
+    backlog - An integer: Representing the number of pending connections that can be queued up at any one time.
+    
+  Returns:
+    undefined
+    
+  Example:
+  (start code)
+    sockfd = posix.socket(posix.AF_INET, posix.SOCK_STREAM);
+    posix.bind(sockfd, {addr:"127.0.0.1",port:7001});
+    posix.listen(sockfd, {addr:"127.0.0.1",port:7001});
+  (end)
+ */
+FUNCTION(posix_listen) {
+  ARG_COUNT(1);
+  // if ( ARGC > 0 && ARGC < 3 ) { return ThrowException(String::New("Insufficient arguments")); }
 	ARG_int(sock,0);
-	if (listen(sock,8)==-1) 
+  // ARG_int(backlog,1);
+  int backlog = 8;
+	if (listen(sock, backlog)==-1) 
 		JS_ERROR(strerror(errno));
 	return Undefined();
-}
-END
+} END
 
-FUNCTION(posix_accept)
-{
+/* 
+  Function: posix.accept(sockfd)
+  Creates a new socket for each connection and removes the connection from the listen queue.
+  
+  Parameters:
+    sockfd - An integer: Socket File Descriptor, representing the socket to listen on.
+  
+  Datagram sockets do not require processing by accept() since the receiver may immediately respond to the request using the listening socket.
+  
+  Returns:
+    The new socket descriptor for the accepted connection, or -1 if an error occurs. All further communication with the remote host now occurs via this new socket.
+*/
+FUNCTION(posix_accept) {
 	ARG_COUNT(1);
 	ARG_int(sock,0);
 	struct sockaddr_in addr;
@@ -304,11 +426,20 @@ FUNCTION(posix_accept)
 	Handle<Object> addrobj = addr2obj(&addr);
 	addrobj->Set(JS_str("sock"),JS_int(newsock));
 	return addrobj;
-}
-END
+} END
 
-FUNCTION(posix_connect)
-{
+/* 
+  Function: posix.connect(sockfd, ip)
+  Connects a socket, identified by its file descriptor, to a remote host specified by that host's address in the argument list.
+  
+  Parameters:
+    sockfd - An integer: Socket File Descriptor, representing the socket to listen on.
+    ip - An object: Contains the IP address (addr) and port number (port)
+  
+  Returns:
+    undefined
+*/
+FUNCTION(posix_connect) {
 	ARG_COUNT(2);
 	ARG_int(sock,0);
 	ARG_obj(ip,1);
@@ -318,9 +449,17 @@ FUNCTION(posix_connect)
 	if (0!=connect(sock,(struct sockaddr*)&addr,sizeof addr)) 
 		JS_ERROR(strerror(errno));
 	return Undefined();
-}
-END
+} END
 
+/* 
+  Function: posix.isDir(path)
+
+  Parameters:
+    path - string ie: '/tmp'
+  
+  Returns:
+    Boolean
+*/
 FUNCTION(posix_isDir,PSTR(path)) {
 	struct stat stat_info;
 	// TODO: Check errors
@@ -331,6 +470,15 @@ FUNCTION(posix_isDir,PSTR(path)) {
 	}
 } END
 
+/* 
+  Function: posix.isfile(path)
+
+  Parameters:
+    path - string ie: '/tmp/file.txt'
+  
+  Returns:
+    Boolean
+*/
 FUNCTION(posix_isFile,PSTR(path)) {
 	struct stat stat_info;
 	// TODO: Check errors
@@ -341,6 +489,29 @@ FUNCTION(posix_isFile,PSTR(path)) {
 	}
 } END
 
+/* 
+  Function: posix.stat(path)
+
+  Parameters:
+    path - string ie: '/tmp/file.txt'
+  
+  Returns:
+    Object
+    
+    dev_t     - ID of device containing file
+    ino_t     - inode number
+    mode_t    - protection
+    nlink_t   - number of hard links
+    uid_t     - user ID of owner
+    gid_t     - group ID of owner
+    dev_t     - device ID (if special file)
+    off_t     - total size, in bytes
+    blksize_t - blocksize for filesystem I/O
+    blkcnt_t  - number of blocks allocated
+    time_t    - time of last access
+    time_t    - time of last modification
+    time_t    - time of last status change
+*/
 FUNCTION(posix_stat,PSTR(path)) {
 
 	// struct stat {
@@ -414,7 +585,7 @@ MODULE
 	BIND("listen",    posix_listen);
 	BIND("accept",    posix_accept);
 	BIND("connect",   posix_connect);
-	BIND("socket",    posix_socket);
+	BIND("socket",    posix_socket);  /**< Bind the posix_socket function to the JavaScript Socket Object */
 	BIND("unlink",    posix_unlink);
 	// Custom extensions
 	BIND("isFile",    posix_isFile);

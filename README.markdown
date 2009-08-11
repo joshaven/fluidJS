@@ -1,8 +1,6 @@
 # Notice #
-Please refer to the official project: 
+This is a work-in-progress re-factoring of K7
 [github.com/sebastien/k7](http://github.com/sebastien/k7/tree/master).
-The information presented here may not be the most accurate and is not the 
-most up-to-date.
 
 
 # K7 - A standard library for V8 #

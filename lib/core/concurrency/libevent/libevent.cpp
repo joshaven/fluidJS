@@ -180,7 +180,7 @@ MODULE {
 	BIND("event_add",le_event_add);
 	BIND("event_del",le_event_del);
 	BIND("event_loop",le_event_loop);
-	BIND("make_socket_nonblocking",le_make_socket_nonblocking);
+	BIND("make_socket_nonblocking",le_make_socket_nonblocking); /**< Non-Blocking Socket */
 	SET_int("EV_TIMEOUT",EV_TIMEOUT);
 	SET_int("EV_READ",EV_READ);
 	SET_int("EV_WRITE",EV_WRITE);

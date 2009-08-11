@@ -7,6 +7,19 @@
 // Last modification : 01-Jun-2009
 // ----------------------------------------------------------------------------
 
+/*
+  File: system.shell
+    shell functions
+
+    Author: Sebastien Pierre                   <sebastien@type-z.org>
+
+    Creation date:      08-May-2008
+
+    Last modification:  10-Aug-2009
+*/
+
+
+
 #include "k7.h"
 
 #define MODULE_NAME   "system.shell"

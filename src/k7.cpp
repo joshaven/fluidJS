@@ -87,7 +87,6 @@ void k7::setup (v8::Handle<v8::Object> global,int argc, char** argv, char** env)
 	#else
 		LOAD("system.modules",      system_modules);
 		LOAD("system.shell",        system_shell);
-
 		// NOTE: This is no good as it slows down the startup time,
 		// especially when there is pure JavaScript that requires parsing.
 
